@@ -1,10 +1,7 @@
 package org.example.domain;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -16,4 +13,7 @@ public class Student extends User{
         super(id, name, borrowedItems);
     }
 
+    public Student(String name) {
+        super(name);
+    }
 }
