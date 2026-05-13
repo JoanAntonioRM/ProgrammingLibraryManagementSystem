@@ -1,5 +1,6 @@
 package org.example.domain;
 
+import org.example.exceptions.LibraryOperationException;
 import org.example.util.Constants;
 
 import java.io.File;
@@ -243,6 +244,78 @@ public class Library {
             matched.add(current);
         }
         collectMatchesRecursive(source, index + 1, keywordLower, matched);
+    }
+
+    /**
+     * Records a loan: updates item status and the user's loan list.
+     *
+     * @throws LibraryOperationException if the loan breaks library rules
+     */
+    public static void borrow(User user, Item item) throws LibraryOperationException {
+        if (user == null || item == null) {
+            throw new LibraryOperationException("User and item must not be null.");
+        }
+        if (user instanceof Admin) {
+            throw new LibraryOperationException("Administrators cannot borrow items.");
+        }
+        if (item.getStatus() == Item.Status.LOST) {
+            throw new LibraryOperationException("That item is lost and cannot be borrowed.");
+        }
+        if (item.getStatus() == Item.Status.BORROWED) {
+            throw new LibraryOperationException("That item is already on loan.");
+        }
+        if (user instanceof Student) {
+            if (!(item instanceof Book)) {
+                throw new LibraryOperationException("Students may only borrow books.");
+            }
+            long booksOut = 0;
+            List<Item> loans = user.getBorrowedItems();
+            if (loans != null) {
+                for (Item loan : loans) {
+                    if (loan instanceof Book) {
+                        booksOut = booksOut + 1;
+                    }
+                }
+            }
+            if (booksOut >= Constants.MAX_BOOKS_STUDENT) {
+                throw new LibraryOperationException(
+                        "Student book limit reached (" + Constants.MAX_BOOKS_STUDENT + ").");
+            }
+        }
+        if (user instanceof Teacher) {
+            List<Item> loans = user.getBorrowedItems();
+            int count = loans == null ? 0 : loans.size();
+            if (count >= Constants.MAX_ITEMS_TEACHER) {
+                throw new LibraryOperationException(
+                        "Teacher borrowing limit reached (" + Constants.MAX_ITEMS_TEACHER + ").");
+            }
+        }
+        item.setStatus(Item.Status.BORROWED);
+        List<Item> toLoan = user.getBorrowedItems();
+        if (toLoan == null) {
+            throw new LibraryOperationException("User has no loan list.");
+        }
+        toLoan.add(item);
+    }
+
+    /**
+     * Ends a loan: item becomes available again and is removed from the user's list.
+     *
+     * @throws LibraryOperationException if the return is not allowed
+     */
+    public static void returnItem(User user, Item item) throws LibraryOperationException {
+        if (user == null || item == null) {
+            throw new LibraryOperationException("User and item must not be null.");
+        }
+        if (user instanceof Admin) {
+            throw new LibraryOperationException("Administrators do not have loans to return.");
+        }
+        List<Item> loans = user.getBorrowedItems();
+        if (loans == null || !loans.contains(item)) {
+            throw new LibraryOperationException("This user is not borrowing that item.");
+        }
+        item.setStatus(Item.Status.IN_STORE);
+        loans.remove(item);
     }
 
     public enum ItemType {
