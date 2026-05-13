@@ -15,12 +15,18 @@ public class DVD extends Item {
 
     public DVD(String id, String title, Status status, String director, int duration) {
         super(id, title, status);
+        if (duration <= 0) {
+            throw new IllegalArgumentException("Duration must be a positive number of minutes.");
+        }
         this.director = director;
         this.duration = duration;
     }
 
     public DVD(String title, String director, int duration) {
         super(title);
+        if (duration <= 0) {
+            throw new IllegalArgumentException("Duration must be a positive number of minutes.");
+        }
         this.director = director;
         this.duration = duration;
     }
