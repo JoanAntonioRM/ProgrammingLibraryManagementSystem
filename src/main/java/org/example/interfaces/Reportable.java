@@ -4,7 +4,7 @@ import org.example.domain.Item;
 import org.example.domain.Library;
 import org.example.domain.User;
 
-public class Reportable {
+public interface Reportable {
 
     static String genItemReport() {
         StringBuilder report = new StringBuilder();

@@ -11,7 +11,7 @@ import java.util.List;
 @EqualsAndHashCode
 @Getter
 @Setter
-public class User {
+public abstract class User {
     protected String id;
     protected String name;
     protected List<Item> borrowedItems;

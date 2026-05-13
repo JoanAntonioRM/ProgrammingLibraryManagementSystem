@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class Item{
+public abstract class Item {
     protected String id;
     protected String title;
     protected Status status;
