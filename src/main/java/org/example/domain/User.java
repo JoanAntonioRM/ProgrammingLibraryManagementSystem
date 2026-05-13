@@ -23,4 +23,12 @@ public abstract class User {
         this.name = name;
         this.borrowedItems = new ArrayList<>();
     }
+
+    /**
+     * Hook for polymorphism; the full assignment rules (limits, item types) belong in {@code Library}.
+     * Default: loan is not recorded through this hook.
+     */
+    public boolean borrow(Item item) {
+        return false;
+    }
 }

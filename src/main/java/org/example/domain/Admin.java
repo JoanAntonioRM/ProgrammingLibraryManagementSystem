@@ -4,18 +4,18 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.example.interfaces.Reportable;
 
+import java.util.ArrayList;
+
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class Admin extends User implements Reportable {
 
     public Admin(String id, String name) {
-        super(id, name, null);
+        super(id, name, new ArrayList<>());
     }
 
     public Admin(String name) {
-        this.id = String.format("%05d", nextId++);
-        this.name = name;
-        //TODO: add to list of users in library
+        super(name);
     }
 
     @Override

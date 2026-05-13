@@ -46,8 +46,11 @@ public class Library {
                 } else if (user instanceof Admin) {
                     fileWriter.write(String.format("ADMIN,%s,%s", user.id, user.name));
                 }
-                for (Item item : user.borrowedItems) {
-                    fileWriter.write(item.id);
+                List<Item> loans = user.getBorrowedItems();
+                if (loans != null) {
+                    for (Item item : loans) {
+                        fileWriter.write(item.id);
+                    }
                 }
                 fileWriter.write("\n");
             }
