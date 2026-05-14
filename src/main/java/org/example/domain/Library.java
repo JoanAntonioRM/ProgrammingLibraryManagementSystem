@@ -219,19 +219,42 @@ public class Library {
         return map;
     }
 
+    /**
+     * For search: one {@link Book} result per ISBN (copy with smallest id kept). Other item types unchanged.
+     */
+    private static List<Item> dedupeSearchMatches(List<Item> matched) {
+        List<Book> books = new ArrayList<>();
+        List<Item> other = new ArrayList<>();
+        for (Item item : matched) {
+            if (item instanceof Book b) {
+                books.add(b);
+            } else {
+                other.add(item);
+            }
+        }
+        books.sort(Comparator.comparing(Item::getId));
+        Map<String, Book> onePerIsbn = new LinkedHashMap<>();
+        for (Book b : books) {
+            onePerIsbn.putIfAbsent(b.getIsbn(), b);
+        }
+        List<Item> out = new ArrayList<>(onePerIsbn.values());
+        out.addAll(other);
+        return out;
+    }
+
     public static Map<ItemType, Set<Item>> streamSearch(String keyword) {
         String keywordLower = keyword == null ? "" : keyword.toLowerCase(Locale.ROOT);
         List<Item> filteredItems = items.stream()
                 .filter(item -> matchesKeyword(item, keywordLower))
                 .toList();
-        return buildTypeMap(filteredItems);
+        return buildTypeMap(dedupeSearchMatches(filteredItems));
     }
 
     public static Map<ItemType, Set<Item>> recursiveSearch(String keyword) {
         String keywordLower = keyword == null ? "" : keyword.toLowerCase(Locale.ROOT);
         List<Item> matched = new ArrayList<>();
         collectMatchesRecursive(items, 0, keywordLower, matched);
-        return buildTypeMap(matched);
+        return buildTypeMap(dedupeSearchMatches(matched));
     }
 
     private static void collectMatchesRecursive(
