@@ -1,6 +1,6 @@
 # Library Management System
 
-## Joan Antonio Rodriguez Munoz
+# Joan Antonio Rodriguez Munoz
 
 ### Student ID 2533309
 
